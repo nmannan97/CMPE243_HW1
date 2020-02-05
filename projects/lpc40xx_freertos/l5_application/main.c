@@ -11,11 +11,8 @@
 
 static void create_blinky_tasks(void);
 static void create_uart_task(void);
-static void uart_task(void *params);
 static void blink_task(void *params);
-static void blink_task1(void *params);
-static void blink_task2(void *params);
-static void blink_task3(void *params);
+static void uart_task(void *params);
 
 int main(void) {
   create_blinky_tasks();
@@ -32,20 +29,15 @@ static void create_blinky_tasks(void) {
    * Use '#if (1)' if you wish to observe how two tasks can blink LEDs
    * Use '#if (0)' if you wish to use the 'periodic_scheduler.h' that will spawn 4 periodic tasks, one for each LED
    */
-#if (1)
+#if (0)
   // These variables should not go out of scope because the 'blink_task' will reference this memory
-  static gpio_s led0, led1, led2, led3;
+  static gpio_s led0, led1;
 
   led0 = board_io__get_led0();
   led1 = board_io__get_led1();
-  led2 = board_io__get_led2();
-  led3 = board_io__get_led3();
 
   xTaskCreate(blink_task, "led0", configMINIMAL_STACK_SIZE, (void *)&led0, PRIORITY_LOW, NULL);
-  xTaskCreate(blink_task1, "led1", configMINIMAL_STACK_SIZE, (void *)&led1, PRIORITY_LOW, NULL);
-  xTaskCreate(blink_task2, "led2", configMINIMAL_STACK_SIZE, (void *)&led2, PRIORITY_LOW, NULL);
-  xTaskCreate(blink_task3, "led3", configMINIMAL_STACK_SIZE, (void *)&led3, PRIORITY_LOW, NULL);
-
+  xTaskCreate(blink_task, "led1", configMINIMAL_STACK_SIZE, (void *)&led1, PRIORITY_LOW, NULL);
 #else
   const size_t stack_size_bytes = 2048 / sizeof(void *);
   periodic_scheduler__initialize(stack_size_bytes);
@@ -67,41 +59,11 @@ static void create_uart_task(void) {
 
 static void blink_task(void *params) {
   const gpio_s led = *((gpio_s *)params); // Parameter was input while calling xTaskCreate()
-  const gpio_s sw0;
-  // Warning: This task starts with very minimal stack, so do not use printf() API here to avoid stack overflow
-  while (true) {
-    gpio__toggle(led);
-    vTaskDelay(1000);
-  }
-}
 
-static void blink_task1(void *params) {
-  const gpio_s led = *((gpio_s *)params); // Parameter was input while calling xTaskCreate()
-  const gpio_s sw1;
   // Warning: This task starts with very minimal stack, so do not use printf() API here to avoid stack overflow
   while (true) {
     gpio__toggle(led);
-    vTaskDelay(100);
-  }
-}
-
-static void blink_task2(void *params) {
-  const gpio_s led = *((gpio_s *)params); // Parameter was input while calling xTaskCreate()
-  const gpio_s sw2;
-  // Warning: This task starts with very minimal stack, so do not use printf() API here to avoid stack overflow
-  while (true) {
-    gpio__toggle(led);
-    vTaskDelay(1);
-  }
-}
-
-static void blink_task3(void *params) {
-  const gpio_s led = *((gpio_s *)params); // Parameter was input while calling xTaskCreate()
-  const gpio_s sw3;
-  // Warning: This task starts with very minimal stack, so do not use printf() API here to avoid stack overflow
-  while (true) {
-    gpio__toggle(led);
-    vTaskDelay(1);
+    vTaskDelay(500);
   }
 }
 
