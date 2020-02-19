@@ -14,6 +14,8 @@ static void create_uart_task(void);
 static void blink_task(void *params);
 static void uart_task(void *params);
 
+gpio_s sw0,sw1;
+
 int main(void) {
   create_blinky_tasks();
   create_uart_task();
@@ -35,6 +37,9 @@ static void create_blinky_tasks(void) {
 
   led0 = board_io__get_led0();
   led1 = board_io__get_led1();
+
+  sw0 = board_io__get_sw0();
+  sw1 = board_io__get_sw1();
 
   xTaskCreate(blink_task, "led0", configMINIMAL_STACK_SIZE, (void *)&led0, PRIORITY_LOW, NULL);
   xTaskCreate(blink_task, "led1", configMINIMAL_STACK_SIZE, (void *)&led1, PRIORITY_LOW, NULL);
@@ -59,11 +64,11 @@ static void create_uart_task(void) {
 
 static void blink_task(void *params) {
   const gpio_s led = *((gpio_s *)params); // Parameter was input while calling xTaskCreate()
-
+  gpio_s sw = *((gpio_s *)sw1);
   // Warning: This task starts with very minimal stack, so do not use printf() API here to avoid stack overflow
   while (true) {
     gpio__toggle(led);
-    vTaskDelay(500);
+    //vTaskDelay(500);
   }
 }
 

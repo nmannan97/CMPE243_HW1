@@ -30,7 +30,8 @@
 
 static const uint32_t board_io__sd_card_cs_pin = (1 << 8);
 static const uint32_t board_io__sd_card_detect_pin = (1 << 9);
-static gpio_s board_io__led0, board_io__led1, board_io__led2, board_io__led3;
+static gpio_s board_io__led0, board_io__led1, board_io__led2, board_io__led3,
+board_io__sw3,board_io__sw2,board_io__sw1,board_io__sw0;
 
 void board_io__initialize(void) {
   // Note: return type of gpio__construct_with_function() because we do not need GPIO instance after its configuration
